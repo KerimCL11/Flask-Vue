@@ -4,6 +4,7 @@
       <div class="col-sm-10">
         <h1>Books</h1>
         <hr><br><br>
+        <alert :message="message" v-if="showMessage"></alert>
         <button type="button" class="btn btn-success btn-sm" @click="toggleAddBookModal">
           Add Book
         </button>
@@ -28,7 +29,7 @@
               <td>
                 <div class="btn-group" role="group">
                   <button type="button" class="btn btn-warning btn-sm">Update</button>
-                  <button type="button" class="btn btn-danger btn-sm">Delete</button>
+                  <button type="button" class="btn btn-danger btn-sm" @click='handleDeleteBook(book)'>Delete</button>
                 </div>
               </td>
             </tr>
@@ -82,6 +83,8 @@
 
 <script>
 import axios from 'axios';
+import Alert from '../components/Alert.vue'
+
 
 export default {
   data() {
@@ -93,7 +96,13 @@ export default {
         read: [],
       },
       books: [],
+      message: '',
+      showMessage: false,
     };
+  },
+
+  components: {
+    alert: Alert,
   },
   methods: {
     addBook(payload) {
@@ -101,6 +110,8 @@ export default {
       axios.post(path, payload)
         .then(() => {
           this.getBooks();
+          this.message = 'Book added!';
+          this.showMessage = true;
         })
         .catch((error) => {
 
@@ -150,14 +161,20 @@ export default {
         body.classList.remove('modal-open');
       }
     },
-    deleteBook(title) {
-      axios.delete(`http://127.0.0.1:5000/books/${title}`)
-        .then(response => {
-          // Actualizar la lista de libros en el frontend
+    handleDeleteBook(book) {
+      this.removeBook(book.title);
+    },
+    removeBook(title) {
+      const path = `http://localhost:5000/books/${title}`;
+      axios.delete(path)
+        .then(() => {
           this.getBooks();
+          this.message = 'Book removed!';
+          this.showMessage = true;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
+          this.getBooks();
         });
     },
     updateBook(originalTitle, newBookData) {
