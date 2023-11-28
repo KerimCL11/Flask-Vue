@@ -28,7 +28,7 @@
               </td>
               <td>
                 <div class="btn-group" role="group">
-                  <button type="button" class="btn btn-warning btn-sm">Update</button>
+                  <button type="button" class="btn btn-warning btn-sm" @click="toggleEditBookModal(book)">Update</button>
                   <button type="button" class="btn btn-danger btn-sm" @click='handleDeleteBook(book)'>Delete</button>
                 </div>
               </td>
@@ -78,6 +78,48 @@
       </div>
     </div>
     <div v-if="activeAddBookModal" class="modal-backdrop fade show"></div>
+
+    <!-- <div ref="editBookModal" class="modal fade" :class="{ show: activeEditBookModal, 'd-block': activeEditBookModal }"
+      tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Update</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="toggleEditBookModal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="mb-3">
+                <label for="editBookTitle" class="form-label">Title:</label>
+                <input type="text" class="form-control" id="editBookTitle" v-model="editBookForm.title"
+                  placeholder="Enter title">
+              </div>
+              <div class="mb-3">
+                <label for="editBookAuthor" class="form-label">Author:</label>
+                <input type="text" class="form-control" id="editBookAuthor" v-model="editBookForm.author"
+                  placeholder="Enter author">
+              </div>
+              <div class="mb-3 form-check">
+                <input type="checkbox" class="form-check-input" id="editBookRead" v-model="editBookForm.read">
+                <label class="form-check-label" for="editBookRead">Read?</label>
+              </div>
+              <div class="btn-group" role="group">
+                <button type="button" class="btn btn-primary btn-sm" @click="handleEditSubmit">
+                  Submit
+                </button>
+                <button type="button" class="btn btn-danger btn-sm" @click="handleEditCancel">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="activeEditBookModal" class="modal-backdrop fade show"></div> -->
+
   </div>
 </template>
 
@@ -90,6 +132,7 @@ export default {
   data() {
     return {
       activeAddBookModal: false,
+      activeEditBookModal: false,
       addBookForm: {
         title: '',
         author: '',
@@ -151,6 +194,9 @@ export default {
       this.addBookForm.title = '';
       this.addBookForm.author = '';
       this.addBookForm.read = [];
+      this.editBookForm.title = '';
+      this.editBookForm.author = '';
+      this.editBookForm.read = [];
     },
     toggleAddBookModal() {
       const body = document.querySelector('body');
@@ -177,15 +223,46 @@ export default {
           this.getBooks();
         });
     },
-    updateBook(originalTitle, newBookData) {
-      axios.put(`http://127.0.0.1:5000/books/${originalTitle}`, newBookData)
-        .then(response => {
-          // Actualizar la lista de libros en el frontend
+    updateBook(payload, title) {
+      const path = `http://localhost:5000/books/${title}`;
+      axios.put(path, payload)
+        .then(() => {
           this.getBooks();
+          this.message = 'Book updated!';
+          this.showMessage = true;
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
+          this.getBooks();
         });
+    },
+    toggleEditBookModal(book) {
+      if (book) {
+        this.editBookForm = book;
+      }
+      const body = document.querySelector('body');
+      this.activeEditBookModal = !this.activeEditBookModal;
+      if (this.activeEditBookModal) {
+        body.classList.add('modal-open');
+      } else {
+        body.classList.remove('modal-open');
+      }
+    },
+    handleEditCancel() {
+      this.toggleEditBookModal(null);
+      this.initForm();
+      this.getBooks(); // why?
+    },
+    handleEditSubmit() {
+      this.toggleEditBookModal(null);
+      let read = false;
+      if (this.editBookForm.read) read = true;
+      const payload = {
+        title: this.editBookForm.title,
+        author: this.editBookForm.author,
+        read,
+      };
+      this.updateBook(payload, this.editBookForm.title);
     },
 
   },
