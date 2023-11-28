@@ -12,7 +12,7 @@ For this proyect, I create a basic template of a web page that locally stores a 
 And, of course: python 3.x++
 
 ## Vue
-For  the packages i used node.js and npm:
-`npm install vue`
-And in the proyect when you create a basic  vue.js proyect with router:
-`npm install axios`
+For  the packages i used node.js and npm:<br>
+`npm install vue`<br>
+And in the proyect when you create a basic  vue.js proyect with router:<br>
+`npm install axios`<br>
