@@ -79,7 +79,7 @@
     </div>
     <div v-if="activeAddBookModal" class="modal-backdrop fade show"></div>
 
-    <!-- <div ref="editBookModal" class="modal fade" :class="{ show: activeEditBookModal, 'd-block': activeEditBookModal }"
+    <div ref="editBookModal" class="modal fade" :class="{ show: activeEditBookModal, 'd-block': activeEditBookModal }"
       tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -118,7 +118,7 @@
         </div>
       </div>
     </div>
-    <div v-if="activeEditBookModal" class="modal-backdrop fade show"></div> -->
+    <div v-if="activeEditBookModal" class="modal-backdrop fade show"></div>
 
   </div>
 </template>
@@ -138,6 +138,11 @@ export default {
         author: '',
         read: [],
       },
+      editBookForm: { 
+      title: '',
+      author: '',
+      read: [],
+    },
       books: [],
       message: '',
       showMessage: false,
